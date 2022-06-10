@@ -18,19 +18,23 @@ st.markdown('Les om [Digital Humaniora - DH](https://nb.no/dh-lab) ved Nasjonalb
 st.title('Tell opp kategorier i en tekst')
 
 
-text_input = st.text_area("lim inn teksten her:", value="Eksempel på tekst.", height=5)
+text_input = st.text_area("Lim inn teksten her:", value="Eksempel på tekst.", height=7, help="Hent tekst fra en nettside med ctrl-A ctrl-C (velg alt og kopier), eller kopier for eksempel fra MS Word.")
 
 #w = dh.WordForm(tokenize(text_input.lower()))
 
+if text_input != "":
+    nlp = spacy.load("nb_core_news_sm")
+
+    analyze = nlp(text_input)
 
 
-nlp = spacy.load("nb_core_news_sm")
+    res = pd.DataFrame.from_dict(Counter([token.pos_ for token in analyze]), orient='index')
+    res.columns = ["Frekvens"]
+    res['Prosent'] = res.Frekvens*100/res.Frekvens.sum()
 
-analyze = nlp(text_input)
+    st.markdown("Statistikk")
+    st.write(res.sort_values(by="Frekvens", ascending=False))
 
 
-res = pd.DataFrame.from_dict(Counter([token.pos_ for token in analyze]), orient='index')
-res.columns = ["Frekvens"]
-res['Prosent'] = res.Frekvens*100/res.Frekvens.sum()
-
-st.write(res.sort_values(by="Frekvens", ascending=False))
+    st.markdown("Analyse")
+    st.write(pd.DataFrame([(x.text,x.lemma_, x.pos_, x.dep_) for x in analyze], columns=["Ord", "Stamme", "Kategori", "Relasjon"]))

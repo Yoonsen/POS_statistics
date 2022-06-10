@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pos-parse-statistikk-deployment
+  labels:
+    app: pos-parse-statistikk
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pos-parse-statistikk
+  template:
+    metadata:
+      labels:
+        app: pos-parse-statistikk
+    spec:
+      containers:
+      - name: pos-parse-statistikk
+        image: gcr.io/norwegian-language-bank/pos-parse-statistikk:19922138-f5bb-4891-ba65-40735d6ca825
+        command: [ "/bin/bash" ]
+        args: [ "-c", "streamlit run pos.py --server.port 8501 --server.baseUrlPath /pos-parse-statistikk --browser.gatherUsageStats=False"]
+        ports:
+        - containerPort: 8501
+        resources:
+          limits:
+            cpu: 250m
+            ephemeral-storage: 256Mi
+            memory: 512Mi
+          requests:
+            cpu: 250m
+            ephemeral-storage: 256Mi
+            memory: 512Mi
