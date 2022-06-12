@@ -5,3 +5,4 @@ requests==2.23.0
 Pillow==7.0.0
 urllib3==1.25.8
 spacy
+spacy_streamlit

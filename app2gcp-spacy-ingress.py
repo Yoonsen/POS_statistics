@@ -51,13 +51,13 @@ spec:
         - containerPort: {PORT}
         resources:
           limits:
-            cpu: 250m
+            cpu: 1
             ephemeral-storage: 256Mi
-            memory: 512Mi
+            memory: 2Gi
           requests:
-            cpu: 250m
+            cpu: 1
             ephemeral-storage: 256Mi
-            memory: 512Mi"""
+            memory: 1Gi"""
         )
 
 def kubectl_apply(a_file):
@@ -107,7 +107,7 @@ def make_docker(streamlit_app = 'app.py', target_dir = '.', port = "8501"):
         WORKDIR /{streamlit_app}
         COPY requirements.txt {target_dir}/requirements.txt
         RUN pip3 install -r requirements.txt
-        RUN python -m spacy download nb_core_news_sm
+        RUN python -m spacy download nb_core_news_lg
         COPY . .
         CMD streamlit run {streamlit_app}
         """
