@@ -23,7 +23,7 @@ text_input = st.text_area("Lim inn teksten her:", value="Eksempel på tekst.", h
 #w = dh.WordForm(tokenize(text_input.lower()))
 
 if text_input != "":
-    nlp = spacy.load("nb_core_news_sm")
+    nlp = spacy.load("nb_core_news_lg")
 
     analyze = nlp(text_input)
 

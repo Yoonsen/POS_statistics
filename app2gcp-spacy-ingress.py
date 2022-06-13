@@ -53,11 +53,11 @@ spec:
           limits:
             cpu: 1
             ephemeral-storage: 256Mi
-            memory: 2Gi
+            memory: 6Gi
           requests:
             cpu: 1
             ephemeral-storage: 256Mi
-            memory: 1Gi"""
+            memory: 6Gi"""
         )
 
 def kubectl_apply(a_file):

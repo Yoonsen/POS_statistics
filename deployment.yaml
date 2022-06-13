@@ -1,32 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pos-parse-statistikk-deployment
+  name: ner-deployment
   labels:
-    app: pos-parse-statistikk
+    app: ner
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: pos-parse-statistikk
+      app: ner
   template:
     metadata:
       labels:
-        app: pos-parse-statistikk
+        app: ner
     spec:
       containers:
-      - name: pos-parse-statistikk
-        image: gcr.io/norwegian-language-bank/pos-parse-statistikk:19922138-f5bb-4891-ba65-40735d6ca825
+      - name: ner
+        image: gcr.io/norwegian-language-bank/ner:46494350-3686-4fa1-992e-4f810f2a05a4
         command: [ "/bin/bash" ]
-        args: [ "-c", "streamlit run pos.py --server.port 8501 --server.baseUrlPath /pos-parse-statistikk --browser.gatherUsageStats=False"]
+        args: [ "-c", "streamlit run spacy_pos.py --server.port 8501 --server.baseUrlPath /ner --browser.gatherUsageStats=False"]
         ports:
         - containerPort: 8501
         resources:
           limits:
-            cpu: 250m
+            cpu: 1
             ephemeral-storage: 256Mi
-            memory: 512Mi
+            memory: 6Gi
           requests:
-            cpu: 250m
+            cpu: 1
             ephemeral-storage: 256Mi
-            memory: 512Mi
+            memory: 6Gi
