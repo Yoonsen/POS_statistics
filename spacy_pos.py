@@ -49,7 +49,7 @@ if submit_button:
     names = nb.names(urn[22:], ratio=ratio, cutoff=2)
     names = [x[0] for x in names[0].most_common(antall)]
     
-    st.write("antall kandidater", len(names))
+    #st.write("antall kandidater", len(names))
 
     if len(names) > 0:
         #parts = [' OR '.join(names[i:i+10]) for i in range(0, len(names), 10)]
@@ -89,10 +89,10 @@ if submit_button:
 
         with col1:
             st.header("Navn")
-            st.write(personer)
+            st.write(personer.sort_values(by='frekvens', ascending = False))
 
         with col2:
             st.header("Steder")
-            st.write(steder)
+            st.write(steder.sort_values(by='frekvens', ascending = False))
 
 
