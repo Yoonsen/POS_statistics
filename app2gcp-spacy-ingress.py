@@ -51,13 +51,13 @@ spec:
         - containerPort: {PORT}
         resources:
           limits:
-            cpu: 1
+            cpu: 2
             ephemeral-storage: 256Mi
-            memory: 6Gi
+            memory: 8Gi
           requests:
-            cpu: 1
+            cpu: 2
             ephemeral-storage: 256Mi
-            memory: 6Gi"""
+            memory: 8Gi"""
         )
 
 def kubectl_apply(a_file):
