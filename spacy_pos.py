@@ -9,6 +9,8 @@ import urllib
 import spacy
 
 import dhlab as dh
+import dhlab.nbtext as nb
+import dhlab.api.dhlab_api as api
 from dhlab.text.nbtokenizer import tokenize
 
 
@@ -22,38 +24,75 @@ st.image(image, width = 200)
 st.markdown('Les om [Digital Humaniora - DH](https://nb.no/dh-lab) ved Nasjonalbiblioteket. Koden benytter modeller for [spaCys](https://spacy.io/models/nb) for norsk (bokmål). ')
 
 
-st.title('Personer og steder i teksten')
+st.title('Personer og steder')
+
+#
+antall = int(st.sidebar.number_input('enkeltnavn', value=30, min_value=10, max_value = 60, help = "høyere tall gir fler kandidater"))
+ratio = st.sidebar.number_input('ratio', value=0.2,min_value=0.1, max_value=0.7, help="lavere tall gir færre kandidater")
+## Velg en bok og analyser den
 
 
 stikkord = st.text_input('Angi noen stikkord for å forme et utvalg tekster, som for eksempel forfatter og tittel, og velg deretter bok fra listen under')
+period = st.slider('Begrens listen til år', 1800, 2022, (1980, 2020))
+if stikkord == '':
+    stikkord = None
+corpus = get_corpus(freetext=stikkord, from_year=period[0], to_year=period[1])
 
-text_input = st.text_area("Lim inn teksten her:", value="Eksempel på tekst.", height=7, help="Hent tekst fra en nettside med ctrl-A ctrl-C (velg alt og kopier), eller kopier for eksempel fra MS Word.")
+choices = [', '.join([str(z) for z in x]) for x in corpus[['authors','title', 'year','urn']].values.tolist()]
 
-#w = dh.WordForm(tokenize(text_input.lower()))
-model = "nb_core_news_lg"
+with st.form(key='my_form'):
+    valg = st.selectbox("Velg et dokument", choices)
+    urn = valg.split(', ')[-1]
+    submit_button = st.form_submit_button(label='Finn navn')
 
-doc = spacy_streamlit.process_text(model, text_input)
+if submit_button:
+    names = nb.names(urn[22:], ratio=ratio, cutoff=2)
+    names = [x[0] for x in names[0].most_common(antall)]
+    
+    st.write("antall kandidater", len(names))
+
+    if len(names) > 0:
+        #parts = [' OR '.join(names[i:i+10]) for i in range(0, len(names), 10)]
+
+        #st.write(urn, urn[22:], parts)
+        #w = dh.WordForm(tokenize(text_input.lower()))
+
+        model = "nb_core_news_lg"
+
+        nlp = spacy.load(model)
+
+        #concs = [api.concordance(urns=[urn], words = p, limit = 100) for p in parts]
+        concs = []
+        st.write('henter data...')
+        
+        for i,p in enumerate(names):
+            try:
+                # if i % 20 == 0:
+                #     st.write(i)
+                concs += list(api.concordance(urns=[urn], words = p, limit = 10).conc.values)
+            except:
+                st.write(p)
+                
+        text = " ".join([s for s in concs]).replace('<b>','').replace('</b>','')
+        #st.write(concs)
+        st.write('analyserer data...')
+        parses = nlp(text)
+
+        d = Counter([(x.text, x.label_) for x in parses.ents ]) 
+        df = pd.DataFrame([(x,y,d[(x,y)]) for (x,y) in d], columns = ['navn', 'type', 'frekvens'])
+
+        #a = df.pivot_table(index=("type",'navn', 'frekvens'))
+        #st.write(a)
+        personer = df[df["type"] == "PER"] 
+        steder = df[df['type'].str.contains('LOC')]
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.header("Navn")
+            st.write(personer)
+
+        with col2:
+            st.header("Steder")
+            st.write(steder)
 
 
-spacy_streamlit.visualize_ner(
-    doc,
-    show_table=True,
-    title="Persons, dates and locations",
-)
-
-# if text_input != "":
-#     nlp = spacy.load("nb_core_news_sm")
-
-#     analyze = nlp(text_input)
-
-
-#     res = pd.DataFrame.from_dict(Counter([token.pos_ for token in analyze]), orient='index')
-#     res.columns = ["Frekvens"]
-#     res['Prosent'] = res.Frekvens*100/res.Frekvens.sum()
-
-#     st.markdown("Statistikk")
-#     st.write(res.sort_values(by="Frekvens", ascending=False))
-
-
-#     st.markdown("Analyse")
-#     st.write(pd.DataFrame([(x.text,x.lemma_, x.pos_, x.dep_) for x in analyze], columns=["Ord", "Stamme", "Kategori", "Relasjon"]))
