@@ -16,17 +16,17 @@ spec:
     spec:
       containers:
       - name: ner
-        image: gcr.io/norwegian-language-bank/ner:46494350-3686-4fa1-992e-4f810f2a05a4
+        image: gcr.io/norwegian-language-bank/ner:4a91f73d-9b36-4c1c-ae33-d4cac9f1e001
         command: [ "/bin/bash" ]
         args: [ "-c", "streamlit run spacy_pos.py --server.port 8501 --server.baseUrlPath /ner --browser.gatherUsageStats=False"]
         ports:
         - containerPort: 8501
         resources:
           limits:
-            cpu: 1
+            cpu: 2
             ephemeral-storage: 256Mi
-            memory: 6Gi
+            memory: 8Gi
           requests:
-            cpu: 1
+            cpu: 2
             ephemeral-storage: 256Mi
-            memory: 6Gi
+            memory: 8Gi

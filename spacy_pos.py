@@ -21,7 +21,7 @@ def get_corpus(freetext=None, title=None, from_year=1900, to_year=2020):
 
 image = Image.open('NB-logo-no-eng-svart.png')
 st.image(image, width = 200)
-st.markdown('Les om [Digital Humaniora - DH](https://nb.no/dh-lab) ved Nasjonalbiblioteket. Koden benytter modeller for [spaCys](https://spacy.io/models/nb) for norsk (bokmål). ')
+st.markdown('Les om [Digital Humaniora - DH](https://nb.no/dh-lab) ved Nasjonalbiblioteket. Koden benytter modeller for norsk utviklet for [spaCy](https://spacy.io/models/nb). ')
 
 
 st.title('Personer og steder')
